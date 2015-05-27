@@ -32,5 +32,6 @@ func codeDistance(basis []uint) (string, int) {
 }
 
 func main() {
+	example := []uint{1, 7, 255}
 	fmt.Println(codeDistance(example))
 }
