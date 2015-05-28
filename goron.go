@@ -16,7 +16,7 @@ func hamming(x, y uint) uint {
 
 func codeDistance(basis []uint) (string, int) {
 	if len(basis) < 2 {
-		return "Need more than one value for a valid basis", -1
+		return "Need a multi-element array for a valid basis", -1
 	}
 	var minDistance int = (1 << 63) - 1
 	for i, va := range basis {
