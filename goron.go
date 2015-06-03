@@ -1,18 +1,9 @@
 package main
 
-import "fmt"
-
-func hamming(x, y uint) uint {
-	var (
-		diff uint	= x^y
-		sum	uint	= 0
-	)
-	for diff > 0 {
-		sum += diff % 2
-		diff = diff >> 1
-	}
-	return sum
-}
+import (
+	"fmt"
+	"log"
+)
 
 func codeDistance(basis []uint, threshold uint) (isValid bool, distance uint, messageStatus string) {
 	//basis of vectors represented as uints since the goal is small-dimensional search
@@ -32,10 +23,30 @@ func codeDistance(basis []uint, threshold uint) (isValid bool, distance uint, me
 			}
 		}
 	}
-	return true, minDistance, "Linear Code Distance found."
+	return true, minDistance, "Linear distance found."
+}
+
+func errorHandler(isValid bool, messageStatus string) {
+	if (!isValid) {
+		log.Fatal("Error: ", messageStatus)
+	}
+}
+
+func hamming(x, y uint) uint {
+	var (
+		diff uint	= x^y
+		sum	uint	= 0
+	)
+	for diff > 0 {
+		sum += diff % 2
+		diff = diff >> 1
+	}
+	return sum
 }
 
 func main() {
 	example := []uint{1, 7, 255}
-	fmt.Println(codeDistance(example, 0))
+	var status, distance, msg = codeDistance(example, 0);
+	errorHandler(status, msg);
+	fmt.Println(msg, distance);
 }
