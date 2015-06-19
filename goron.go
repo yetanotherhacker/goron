@@ -33,6 +33,19 @@ func errorHandler(isValid bool, messageStatus string) {
 	}
 }
 
+func findNextBasisVector(subBasis []uint, startPosition uint, distance uint, maxElement uint) (isValid bool, vector uint, messageStatus string) {
+	//for incremental search of n -> n+1 vector space with desired minimum distance between codewords
+	for candidate := startPosition; maxElement > candidate; candidate++ {
+		var status, _, _ = basisCodeDistance(append(subBasis, candidate), distance)
+		if !status {
+			break
+		} else {
+			return true, candidate, "New basis vector found."
+		}
+	}
+	return false, 0, "No valid basis vector found."
+}
+
 func hamming(x, y uint) uint {
 	var (
 		diff uint = x ^ y
