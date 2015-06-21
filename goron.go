@@ -38,7 +38,7 @@ func findNextBasisVector(subBasis []uint, startPosition uint, distance uint, max
 	for candidate := startPosition; maxElement > candidate; candidate++ {
 		var status, _, _ = basisCodeDistance(append(subBasis, candidate), distance)
 		if !status {
-			break
+			continue
 		} else {
 			return true, candidate, "New basis vector found."
 		}
@@ -59,8 +59,11 @@ func hamming(x, y uint) uint {
 }
 
 func main() {
-	example := []uint{1, 7, 255}
+	example := []uint{1, 14, 112}
 	var status, distance, msg = basisCodeDistance(example, 0)
 	errorHandler(status, msg)
 	fmt.Println(msg, distance)
+	status , newBasis, msg := findNextBasisVector(example, 0, 4, 255)
+	errorHandler(status, msg)
+	fmt.Println(msg, newBasis)
 }
