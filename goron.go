@@ -15,7 +15,7 @@ func basisCodeDistance(basis []uint, threshold uint) (isValid bool, distance uin
 	for i, vectorA := range basis {
 		subBasis := basis[i+1:]
 		for _, vectorB := range subBasis {
-			vectorDistance := uint(hamming(vectorA, vectorB))
+			vectorDistance := uint(hammingDistance(vectorA, vectorB))
 			if minDistance > vectorDistance {
 				minDistance = vectorDistance
 				if threshold > minDistance {
@@ -33,22 +33,43 @@ func errorHandler(isValid bool, messageStatus string) {
 	}
 }
 
-func findNextBasisVector(subBasis []uint, startPosition uint, distance uint, maxElement uint) (isValid bool, vector uint, messageStatus string) {
+func findBestNewBasisVector(subBasis []uint, maximin uint, maxElement uint) (isValid bool, vector uint, distance uint, messageStatus string) {
+	var (
+		candidate     uint
+		isSearchValid bool = true
+		newDistance   uint
+		startPosition uint = 0
+	)
+	for isSearchValid {
+		isSearchValid, candidate, newDistance, _ = findNextBasisVector(subBasis, startPosition, maximin, maxElement)
+		if newDistance > maximin {
+			maximin = newDistance
+		}
+		startPosition = candidate + 1
+	}
+	if startPosition > 0 {
+		return true, startPosition, maximin, "New best-distance vector found"
+	} else {
+		return false, startPosition, maximin, "No valid basis vector found"
+	}
+}
+
+func findNextBasisVector(subBasis []uint, startPosition uint, distance uint, maxElement uint) (isValid bool, vector uint, newDistance uint, messageStatus string) {
 	//for incremental search of n -> n+1 vector space with desired minimum distance between codewords
 	for candidate := startPosition; maxElement > candidate; candidate++ {
-		var status, _, _ = basisCodeDistance(append(subBasis, candidate), distance)
+		var status, newDistance, _ = basisCodeDistance(append(subBasis, candidate), distance)
 		if !status {
 			continue
 		} else {
-			return true, candidate, "New basis vector found."
+			return true, candidate, newDistance, "New basis vector found."
 		}
 	}
-	return false, 0, "No valid basis vector found."
+	return false, 0, newDistance, "No valid basis vector found."
 }
 
-func hamming(x, y uint) uint {
+func hammingDistance(vectorA, vectorB uint) uint {
 	var (
-		diff uint = x ^ y
+		diff uint = vectorA ^ vectorB
 		sum  uint = 0
 	)
 	for diff > 0 {
@@ -63,7 +84,7 @@ func main() {
 	var status, distance, msg = basisCodeDistance(example, 0)
 	errorHandler(status, msg)
 	fmt.Println(msg, distance)
-	status , newBasis, msg := findNextBasisVector(example, 0, 4, 255)
+	status, newBasis, _, msg := findNextBasisVector(example, 0, 4, 255)
 	errorHandler(status, msg)
 	fmt.Println(msg, newBasis)
 }
